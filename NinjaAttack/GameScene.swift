@@ -74,6 +74,7 @@ class GameScene: SKScene{
     static let none      : UInt32 = 0
     static let all       : UInt32 = UInt32.max
     static let monster   : UInt32 = 0b1
+    static let gold   : UInt32 = 0b1
     static let projectile: UInt32 = 0b10
   }
   
@@ -91,9 +92,8 @@ class GameScene: SKScene{
     scoreLabel.position = CGPoint(x: size.width * 0.2, y: size.height * 0.8)
     addChild(scoreLabel)
     
-    
     backgroundColor = SKColor.black
-    
+
     player.position = CGPoint(x: size.width * 0.1, y: size.height * 0.5)
     
     addChild(player)
@@ -104,6 +104,8 @@ class GameScene: SKScene{
     run(SKAction.repeatForever(
       SKAction.sequence([
         SKAction.run(addMonster),
+        SKAction.wait(forDuration: 2.0),
+        SKAction.run(addMonster2),
         SKAction.wait(forDuration: 3.0)
         ])
     ))
@@ -140,7 +142,7 @@ class GameScene: SKScene{
     
     addChild(monster)
     
-    let actualDuration = random(min: CGFloat(2.5), max: CGFloat(4.0))
+    let actualDuration = random(min: CGFloat(3.0), max: CGFloat(4.0))
     
     let actionMove = SKAction.move(to: CGPoint(x: -monster.size.width/2, y: actualY), duration: TimeInterval(actualDuration))
     
@@ -154,8 +156,39 @@ class GameScene: SKScene{
     }
     monster.run(SKAction.sequence([actionMove, loseAction, actionMoveDone]))
   }
+  
+  func addMonster2()
+  {
+    let monster = SKSpriteNode(imageNamed: "horse")
     
-
+    monster.physicsBody = SKPhysicsBody(rectangleOf: monster.size)
+    monster.physicsBody?.isDynamic = true // 2
+    monster.physicsBody?.categoryBitMask = PhysicsCategory.monster
+    monster.physicsBody?.contactTestBitMask = PhysicsCategory.projectile
+    monster.physicsBody?.collisionBitMask = PhysicsCategory.none
+    
+    
+    let actualY = random(min: monster.size.height/2, max: size.height - monster.size.height/2)
+    
+    monster.position = CGPoint(x: size.width + monster.size.width/2, y: actualY)
+    
+    addChild(monster)
+    
+    let actualDuration = random(min: CGFloat(2.5), max: CGFloat(3.5))
+    
+    let actionMove = SKAction.move(to: CGPoint(x: -monster.size.width/2, y: actualY), duration:  TimeInterval(actualDuration))
+    
+    let actionMoveDone = SKAction.removeFromParent()
+    
+    let loseAction = SKAction.run() { [weak self] in
+      guard let `self` = self else { return }
+      let reveal = SKTransition.flipHorizontal(withDuration: 0.5)
+      let gameOverScene = GameOverScene(size: self.size, won: false)
+      self.view?.presentScene(gameOverScene, transition: reveal)
+    }
+    monster.run(SKAction.sequence([actionMove, loseAction, actionMoveDone]))
+  }
+  
 
   override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
     guard let touch = touches.first else {
