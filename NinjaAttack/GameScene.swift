@@ -77,12 +77,12 @@ class GameScene: SKScene {
     static let projectile: UInt32 = 0b10
   }
   
-  let player = SKSpriteNode(imageNamed: "player")
+  let player = SKSpriteNode(imageNamed: "dragon")
   var monstersDestroyed = 0
   
   override func didMove(to view: SKView)
   {
-    backgroundColor = SKColor.white
+    backgroundColor = SKColor.black
     
     player.position = CGPoint(x: size.width * 0.1, y: size.height * 0.5)
     
@@ -94,9 +94,13 @@ class GameScene: SKScene {
     run(SKAction.repeatForever(
       SKAction.sequence([
         SKAction.run(addMonster),
-        SKAction.wait(forDuration: 1.0)
+        SKAction.wait(forDuration: 3.0)
         ])
     ))
+    
+    let backgroundMusic = SKAudioNode(fileNamed: "Bgmusic.mp3")
+    backgroundMusic.autoplayLooped = true
+    addChild(backgroundMusic)
   }
   
   func random() -> CGFloat
@@ -111,7 +115,7 @@ class GameScene: SKScene {
   
   func addMonster()
   {
-    let monster = SKSpriteNode(imageNamed: "monster")
+    let monster = SKSpriteNode(imageNamed: "knight")
     
     monster.physicsBody = SKPhysicsBody(rectangleOf: monster.size)
     monster.physicsBody?.isDynamic = true // 2
@@ -126,7 +130,7 @@ class GameScene: SKScene {
     
     addChild(monster)
     
-    let actualDuration = random(min: CGFloat(2.0), max: CGFloat(4.0))
+    let actualDuration = random(min: CGFloat(2.5), max: CGFloat(4.0))
     
     let actionMove = SKAction.move(to: CGPoint(x: -monster.size.width/2, y: actualY), duration: TimeInterval(actualDuration))
     
@@ -147,11 +151,11 @@ class GameScene: SKScene {
     guard let touch = touches.first else {
       return
     }
-    run(SKAction.playSoundFileNamed("pew-pew-lei.caf", waitForCompletion: false))
+    run(SKAction.playSoundFileNamed("Fireball.mp3", waitForCompletion: false))
     
     let touchLocation = touch.location(in: self)
 
-    let projectile = SKSpriteNode(imageNamed: "projectile")
+    let projectile = SKSpriteNode(imageNamed: "fire")
     projectile.position = player.position
     
     projectile.physicsBody = SKPhysicsBody(circleOfRadius: projectile.size.width/2)
