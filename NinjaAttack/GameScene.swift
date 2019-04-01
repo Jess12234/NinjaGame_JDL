@@ -68,7 +68,7 @@ extension CGPoint
 }
 
 
-class GameScene: SKScene {
+class GameScene: SKScene{
   
   struct PhysicsCategory {
     static let none      : UInt32 = 0
@@ -79,9 +79,19 @@ class GameScene: SKScene {
   
   let player = SKSpriteNode(imageNamed: "dragon")
   var monstersDestroyed = 0
+  var scoreLabel: SKLabelNode!
   
   override func didMove(to view: SKView)
   {
+    
+    scoreLabel = SKLabelNode(fontNamed: "GurmukhiMN")
+    scoreLabel.text = "Score = \(monstersDestroyed)"
+    scoreLabel.fontSize = 20
+    scoreLabel.fontColor = SKColor.red
+    scoreLabel.position = CGPoint(x: size.width * 0.2, y: size.height * 0.8)
+    addChild(scoreLabel)
+    
+    
     backgroundColor = SKColor.black
     
     player.position = CGPoint(x: size.width * 0.1, y: size.height * 0.5)
@@ -186,9 +196,9 @@ class GameScene: SKScene {
     print("Hit")
     projectile.removeFromParent()
     monster.removeFromParent()
-    
     monstersDestroyed += 1
-    if monstersDestroyed > 30 {
+    scoreLabel.text = "Score = \(monstersDestroyed)"
+    if monstersDestroyed >= 30 {
       let reveal = SKTransition.flipHorizontal(withDuration: 0.5)
       let gameOverScene = GameOverScene(size: self.size, won: true)
       view?.presentScene(gameOverScene, transition: reveal)
