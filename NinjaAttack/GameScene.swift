@@ -104,7 +104,7 @@ class GameScene: SKScene{
     run(SKAction.repeatForever(
       SKAction.sequence([
         SKAction.run(addMonster),
-        SKAction.wait(forDuration: 2.0),
+        SKAction.wait(forDuration: 1.5),
         SKAction.run(addMonster2),
         SKAction.wait(forDuration: 3.0)
         ])
